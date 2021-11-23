@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pricelocq/features/search_station/search_station_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -29,7 +30,7 @@ class LoginScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(8.0),
                   child: SizedBox(
                     width: double.infinity,
-                    child: ElevatedButton(onPressed: (){},
+                    child: ElevatedButton(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context)=> const SearchStationScreen())),
                         child: const Text('Login')),
                   ),
                 )
