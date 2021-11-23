@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:pricelocq/features/search_station/search_station_list_screen.dart';
+import 'package:pricelocq/features/station_selection.dart';
 
-class SearchStationScreen extends StatefulWidget {
-  const SearchStationScreen({Key? key}) : super(key: key);
+class SearchStationMapScreen extends StatefulWidget {
+  const SearchStationMapScreen({Key? key}) : super(key: key);
 
   @override
-  State<SearchStationScreen> createState() => _SearchStationScreenState();
+  State<SearchStationMapScreen> createState() => _SearchStationMapScreenState();
 }
 
-class _SearchStationScreenState extends State<SearchStationScreen> {
+class _SearchStationMapScreenState extends State<SearchStationMapScreen> {
 
   late GoogleMapController _controller;
   late Position _position;
@@ -26,10 +28,13 @@ class _SearchStationScreenState extends State<SearchStationScreen> {
       appBar: AppBar(
         title: const Text("Search Station"),
         backgroundColor: Colors.deepPurple,
-        actions: const [
-          Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Icon(Icons.search),
+        actions:  [
+          InkWell(
+           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context)=> const SearchStationListScreen())),
+            child: const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Icon(Icons.search),
+            ),
           )
         ],
       ),
@@ -62,7 +67,7 @@ class _SearchStationScreenState extends State<SearchStationScreen> {
             color: Colors.white,
             borderRadius: BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30))
         ),
-        height: 300,
+        height: 250,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
@@ -78,25 +83,8 @@ class _SearchStationScreenState extends State<SearchStationScreen> {
               const SizedBox(height: 10,),
               Expanded(
                 child: ListView.builder(
-                  itemCount: 3,
-                    itemBuilder: (context, index) => Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              Text('SEAOIL PACO - MANILA', style: TextStyle(fontWeight: FontWeight.w600),),
-                              SizedBox(height: 4,),
-                              Text('1 km away from you'),
-                            ],
-                          ),
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Icon(Icons.circle_outlined),
-                        )],)),
+                  itemCount: 5,
+                    itemBuilder: (context, index) => const StationSelection()),
               )
             ],
           ),
