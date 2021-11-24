@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pricelocq/features/search_station/bloc/search_station_cubit.dart';
+import 'package:pricelocq/features/search_station/bloc/search_station_state.dart';
 import 'package:pricelocq/features/station_selection.dart';
 
 class SearchStationListScreen extends StatelessWidget {
@@ -6,7 +9,7 @@ class SearchStationListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BlocBuilder<SearchStationCubit, SearchStationState>(builder: (context, state) => Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: const Text("Search Station"),
@@ -35,15 +38,15 @@ class SearchStationListScreen extends StatelessWidget {
                     SizedBox(height: 10,),
                     TextField(
                       decoration: InputDecoration(
-                        hintText: 'Search',
-                        prefixIcon: Icon(Icons.search),
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white, width: 5.0),
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(10.0)), //
-                        )
+                          hintText: 'Search',
+                          prefixIcon: Icon(Icons.search),
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white, width: 5.0),
+                            borderRadius: BorderRadius.all(
+                                Radius.circular(10.0)), //
+                          )
                       ),
                     ),
                   ],
@@ -52,11 +55,11 @@ class SearchStationListScreen extends StatelessWidget {
           ),
           Expanded(
             child: ListView.builder(
-                itemCount: 5,
-                itemBuilder: (context, index) => const StationSelection()),
+                itemCount: state.stations.length,
+                itemBuilder: (context, index) => StationSelection(station: state.stations[index],)),
           )
         ],
       ),
-    );
+    ));
   }
 }

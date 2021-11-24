@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:pricelocq/features/search_station/models/station.dart';
 
 class StationSelection extends StatelessWidget {
-  const StationSelection({Key? key}) : super(key: key);
+  const StationSelection({required this.station});
+
+  final Station station;
 
   @override
   Widget build(BuildContext context) {
@@ -12,10 +15,10 @@ class StationSelection extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              Text('SEAOIL PACO - MANILA', style: TextStyle(fontWeight: FontWeight.w600),),
-              SizedBox(height: 4,),
-              Text('1 km away from you'),
+            children:  [
+              Text(station.name, style: const TextStyle(fontWeight: FontWeight.w600),),
+              const SizedBox(height: 4,),
+              Text('${station.dealerId}'),
             ],
           ),
         ),
