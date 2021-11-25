@@ -42,6 +42,7 @@ class _SearchStationMapScreenState extends State<SearchStationMapScreen> {
     return BlocBuilder<SearchStationCubit, SearchStationState>(
       builder: (context,state) => Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           title: const Text("Search Station"),
           backgroundColor: Colors.deepPurple,
           actions:  [
