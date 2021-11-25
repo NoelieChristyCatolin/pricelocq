@@ -10,7 +10,6 @@ class SearchStationCubit extends Cubit<SearchStationState>{
   List<Station> _stations = [];
 
   void getStationList() async {
-    print('getStationList');
     List<Station> stations = await searchStationRepository.getStationList();
     _stations = stations;
     emit(state.copyWith(stations: stations));

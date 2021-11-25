@@ -146,7 +146,6 @@ class _SearchStationMapScreenState extends State<SearchStationMapScreen> {
   }
 
   _onDismissedBottomSheet(){
-    print('_onDismissedBottomSheet');
     setState(() {
       isBottomSheetDisplayed = false;
     });
@@ -180,7 +179,6 @@ class _SearchStationMapScreenState extends State<SearchStationMapScreen> {
   }
 
   _resetSelection(){
-    print('resetSelection');
     setState(() {
       // groupValue = -1;
       hasStationSelected = false;

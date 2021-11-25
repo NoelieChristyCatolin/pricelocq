@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pricelocq/api_service.dart';
+import 'package:pricelocq/core/api_service.dart';
 import 'package:pricelocq/features/login/bloc/login_cubit.dart';
 import 'package:pricelocq/features/login/login_repository.dart';
 import 'package:pricelocq/features/login/login_screen.dart';

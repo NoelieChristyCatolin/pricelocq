@@ -49,7 +49,8 @@ class _SearchStationListScreenState extends State<SearchStationListScreen> {
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
                   children:  [
-                    const Center(child: Text('Which Pricelocq station will you likely visit?', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),)),
+                    const Center(child: Text('Which Pricelocq station will you likely visit?',
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),)),
                     const SizedBox(height: 10,),
                     TextField(
                       controller: searchController,

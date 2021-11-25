@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:pricelocq/api_service.dart';
+import 'package:pricelocq/core/api_service.dart';
 import 'package:pricelocq/features/search_station/models/station.dart';
 import 'package:pricelocq/features/search_station/models/station_response.dart';
 
