@@ -41,8 +41,7 @@ class LoginScreen extends StatelessWidget {
                         width: double.infinity,
                         child: ElevatedButton(onPressed: () async {
                           context.read<LoginCubit>()
-                              // .login(mobile: mobileController.text, password: passwordController.text)
-                              .login(mobile: '09021234567', password: '123456')
+                              .login(mobile: mobileController.text, password: passwordController.text)
                               .then((value) => Navigator.push(context, MaterialPageRoute(builder: (context)=> const SearchStationMapScreen())));
                         },
                             child: const Text('Login')),
