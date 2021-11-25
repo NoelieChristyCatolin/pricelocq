@@ -14,4 +14,8 @@ class SearchStationCubit extends Cubit<SearchStationState>{
     List<Station> stations = await searchStationRepository.getStationList();
     emit(state.copyWith(stations: stations));
   }
+
+  int convertDistance(double distance){
+    return (distance/1000).ceil();
+  }
 }

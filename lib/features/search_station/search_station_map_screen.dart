@@ -24,9 +24,10 @@ class _SearchStationMapScreenState extends State<SearchStationMapScreen> {
     zoom: 14,
   );
 
+  int val = -1;
+
   @override
   Widget build(BuildContext context) {
-
     return BlocBuilder<SearchStationCubit, SearchStationState>(
       builder: (context,state) => Scaffold(
         appBar: AppBar(
@@ -87,8 +88,16 @@ class _SearchStationMapScreenState extends State<SearchStationMapScreen> {
                 const SizedBox(height: 10,),
                 Expanded(
                   child: ListView.builder(
-                    itemCount: 5,
-                      itemBuilder: (context, index) => StationSelection(station: state.stations[index],)),
+                    itemCount: state.stations.length,
+                      itemBuilder: (context, index) => StationSelection(station: state.stations[index], groupValue: val, onChanged: (){
+                        //todo: fix selection
+                        double lat = double.parse(state.stations[index].lat);
+                        double lng = double.parse(state.stations[index].lng);
+                        _cameraPosition = CameraPosition(target: LatLng(lat, lng), zoom: 20,);
+                        _controller.animateCamera(
+                          CameraUpdate.newCameraPosition(_cameraPosition),
+                        );
+                      },)),
                 )
               ],
             ),

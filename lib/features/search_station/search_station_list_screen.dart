@@ -9,6 +9,7 @@ class SearchStationListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    int val = -1;
     return BlocBuilder<SearchStationCubit, SearchStationState>(builder: (context, state) => Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -56,7 +57,9 @@ class SearchStationListScreen extends StatelessWidget {
           Expanded(
             child: ListView.builder(
                 itemCount: state.stations.length,
-                itemBuilder: (context, index) => StationSelection(station: state.stations[index],)),
+                itemBuilder: (context, index) => StationSelection(station: state.stations[index], groupValue: val, onChanged: (){
+                  //todo: dismiss and reposition map camera
+                },)),
           )
         ],
       ),

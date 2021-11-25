@@ -35,6 +35,8 @@ class Station {
   final String? createdAt;
   final String? updatedAt;
 
+  double? distance;
+
   factory Station.fromJson(Map<String, dynamic> json) {
     return Station(
       id: json['id'],
