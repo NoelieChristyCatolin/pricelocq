@@ -16,6 +16,7 @@ class LoginRepository {
 
     if (response.statusCode == 200) {
       SessionResponse sessionResponse = SessionResponse.fromJson(response.data);
+      print(sessionResponse.data.accessToken);
       prefs.setString('accessToken', sessionResponse.data.accessToken);
       return sessionResponse.data;
     }

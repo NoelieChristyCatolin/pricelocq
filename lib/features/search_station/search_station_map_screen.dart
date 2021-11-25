@@ -4,8 +4,10 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:pricelocq/features/search_station/bloc/search_station_cubit.dart';
 import 'package:pricelocq/features/search_station/bloc/search_station_state.dart';
+import 'package:pricelocq/features/search_station/components/icon_label.dart';
+import 'package:pricelocq/features/search_station/models/station.dart';
 import 'package:pricelocq/features/search_station/search_station_list_screen.dart';
-import 'package:pricelocq/features/station_selection.dart';
+import 'package:pricelocq/features/search_station/components/station_selection.dart';
 
 class SearchStationMapScreen extends StatefulWidget {
   const SearchStationMapScreen({Key? key}) : super(key: key);
@@ -17,14 +19,16 @@ class SearchStationMapScreen extends StatefulWidget {
 class _SearchStationMapScreenState extends State<SearchStationMapScreen> {
 
   late GoogleMapController _controller;
-  late Position _position;
+  late Position _currentPosition;
   //todo: Fix initial position
   late CameraPosition _cameraPosition = const CameraPosition(
     target: LatLng(-15.4630239974464, 28.363397732282127),
     zoom: 14,
   );
 
-  int val = -1;
+  int groupValue = -1;
+  bool hasStationSelected = false;
+  Station? selectedStation;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +39,7 @@ class _SearchStationMapScreenState extends State<SearchStationMapScreen> {
           backgroundColor: Colors.deepPurple,
           actions:  [
             InkWell(
-             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context)=> const SearchStationListScreen())),
+             onTap: () => _navigateToSearchStationListScreen(context),
               child: const Padding(
                 padding: EdgeInsets.all(8.0),
                 child: Icon(Icons.search),
@@ -50,7 +54,7 @@ class _SearchStationMapScreenState extends State<SearchStationMapScreen> {
                 height: 50,
                 width: double.infinity,
                 color: Colors.deepPurple,
-                child: const Center(child: Text('Which Pricelocq station will you likely visit?'))
+                child: const Center(child: Text('Which Pricelocq station will you likely visit?', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),)),
               ),
               Expanded(child: GoogleMap(
                 myLocationEnabled: true,
@@ -58,8 +62,8 @@ class _SearchStationMapScreenState extends State<SearchStationMapScreen> {
                 initialCameraPosition: _cameraPosition,
                 onMapCreated: (GoogleMapController controller) async {
                   _controller = controller;
-                  _position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-                  _cameraPosition = CameraPosition(target: LatLng(_position.latitude, _position.longitude), zoom: 20,);
+                  _currentPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+                  _cameraPosition = CameraPosition(target: LatLng(_currentPosition.latitude, _currentPosition.longitude), zoom: 20,);
                   _controller.animateCamera(
                     CameraUpdate.newCameraPosition(_cameraPosition),
                   );
@@ -81,29 +85,86 @@ class _SearchStationMapScreenState extends State<SearchStationMapScreen> {
                   padding: const EdgeInsets.all(8.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
-                      Text('Nearby Stations', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),),
-                      Text('Done', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Colors.grey))],),
+                    children:  [
+                      hasStationSelected ?
+                          //todo: back to list
+                          // TextButton(child: const Text('Back to list'), onPressed: resetSelection(),)
+                        const Text('Back to list', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),)
+                        : const Text('Nearby Stations', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),),
+                      const Text('Done', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Colors.grey)),
+                    ],),
                 ),
                 const SizedBox(height: 10,),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: state.stations.length,
-                      itemBuilder: (context, index) => StationSelection(station: state.stations[index], groupValue: val, onChanged: (){
-                        //todo: fix selection
-                        double lat = double.parse(state.stations[index].lat);
-                        double lng = double.parse(state.stations[index].lng);
-                        _cameraPosition = CameraPosition(target: LatLng(lat, lng), zoom: 20,);
-                        _controller.animateCamera(
-                          CameraUpdate.newCameraPosition(_cameraPosition),
-                        );
-                      },)),
-                )
+                hasStationSelected ?
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children:  [
+                          Text(selectedStation!.name, style: const TextStyle(fontWeight: FontWeight.w600), overflow: TextOverflow.ellipsis,),
+                          Text(selectedStation!.address, ),
+                          Row(children: [Text(selectedStation!.city,),Text(selectedStation!.area,)],),
+                          const SizedBox(height: 30,),
+                          Row(children: [
+                            IconLabel(icon: const Icon(Icons.car_repair), label: '${convertDistance(selectedStation!)} km away'),
+                            const SizedBox(width: 20,),
+                            const IconLabel(icon: Icon(Icons.access_time), label: 'Open 24 hrs'),
+                          ],)
+                        ],
+                      ),
+                    )
+                    : Expanded(
+                      child: ListView.builder(
+                        itemCount: state.stations.length,
+                          itemBuilder: (context, index) => StationSelection(
+                            index: index,
+                            station: state.stations[index],
+                            groupValue: groupValue,
+                            onChanged: (value) =>_handleRadioValueChange(value, state.stations[index])))
+                    )
               ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  void _navigateToSearchStationListScreen(BuildContext context) async {
+    final List<Object> result = await Navigator.push(context, MaterialPageRoute(builder: (context)=> const SearchStationListScreen()));
+    Station selectedStation = result[0] as Station;
+    int selectedIndex = result[1] as int;
+    print(selectedStation.name);
+    print(selectedIndex);
+    _handleRadioValueChange(selectedIndex, selectedStation);
+  }
+  _handleRadioValueChange(int value, Station station){
+    print(value);
+    setState(() {
+      groupValue = value;
+      hasStationSelected = true;
+      selectedStation = station;
+
+      updateMapCamera(station);
+    });
+  }
+
+  updateMapCamera(Station station){
+    double lat = double.parse(station.lat);
+    double lng = double.parse(station.lng);
+    _cameraPosition = CameraPosition(target: LatLng(lat, lng), zoom: 20,);
+    _controller.animateCamera(
+      CameraUpdate.newCameraPosition(_cameraPosition),
+    );
+  }
+
+  resetSelection(){
+    print('reset');
+    hasStationSelected = false;
+    selectedStation = null;
+  }
+
+  int convertDistance(Station station){
+    return context.read<SearchStationCubit>().convertDistance(station.distance!);
   }
 }

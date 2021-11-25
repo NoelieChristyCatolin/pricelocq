@@ -2,14 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pricelocq/features/search_station/bloc/search_station_cubit.dart';
 import 'package:pricelocq/features/search_station/bloc/search_station_state.dart';
-import 'package:pricelocq/features/station_selection.dart';
+import 'package:pricelocq/features/search_station/components/station_selection.dart';
+import 'package:pricelocq/features/search_station/models/station.dart';
 
-class SearchStationListScreen extends StatelessWidget {
+class SearchStationListScreen extends StatefulWidget {
   const SearchStationListScreen({Key? key}) : super(key: key);
 
   @override
+  State<SearchStationListScreen> createState() => _SearchStationListScreenState();
+}
+
+class _SearchStationListScreenState extends State<SearchStationListScreen> {
+  int groupValue = -1;
+
+  @override
   Widget build(BuildContext context) {
-    int val = -1;
     return BlocBuilder<SearchStationCubit, SearchStationState>(builder: (context, state) => Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -57,12 +64,21 @@ class SearchStationListScreen extends StatelessWidget {
           Expanded(
             child: ListView.builder(
                 itemCount: state.stations.length,
-                itemBuilder: (context, index) => StationSelection(station: state.stations[index], groupValue: val, onChanged: (){
-                  //todo: dismiss and reposition map camera
-                },)),
+                itemBuilder: (context, index) =>  StationSelection(
+                    index: index,
+                    station: state.stations[index],
+                    groupValue: groupValue,
+                    onChanged: (value) =>_handleRadioValueChange(value, state.stations[index])))
           )
         ],
       ),
     ));
+  }
+
+  _handleRadioValueChange(int value, Station station){
+    setState(() {
+      groupValue = value;
+    });
+    Navigator.pop(context, [station, value]);
   }
 }
