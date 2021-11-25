@@ -14,6 +14,13 @@ class SearchStationListScreen extends StatefulWidget {
 
 class _SearchStationListScreenState extends State<SearchStationListScreen> {
   int groupValue = -1;
+  TextEditingController searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<SearchStationCubit>().getStationList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,11 +48,12 @@ class _SearchStationListScreenState extends State<SearchStationListScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
-                  children: const [
-                    Center(child: Text('Which Pricelocq station will you likely visit?', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),)),
-                    SizedBox(height: 10,),
+                  children:  [
+                    const Center(child: Text('Which Pricelocq station will you likely visit?', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),)),
+                    const SizedBox(height: 10,),
                     TextField(
-                      decoration: InputDecoration(
+                      controller: searchController,
+                      decoration: const InputDecoration(
                           hintText: 'Search',
                           prefixIcon: Icon(Icons.search),
                           filled: true,
@@ -56,6 +64,7 @@ class _SearchStationListScreenState extends State<SearchStationListScreen> {
                                 Radius.circular(10.0)), //
                           )
                       ),
+                      onChanged: (value) => _searchStation(value),
                     ),
                   ],
                 ),
@@ -73,6 +82,10 @@ class _SearchStationListScreenState extends State<SearchStationListScreen> {
         ],
       ),
     ));
+  }
+
+  _searchStation(String searchKey){
+    context.read<SearchStationCubit>().searchStation(searchKey);
   }
 
   _handleRadioValueChange(int value, Station station){

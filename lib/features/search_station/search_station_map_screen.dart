@@ -22,7 +22,7 @@ class _SearchStationMapScreenState extends State<SearchStationMapScreen> {
   late Position _currentPosition;
   //todo: Fix initial position
   late CameraPosition _cameraPosition = const CameraPosition(
-    target: LatLng(-15.4630239974464, 28.363397732282127),
+    target: LatLng(14.5772522,121.0391382),
     zoom: 14,
   );
 
