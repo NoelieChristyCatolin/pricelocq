@@ -17,10 +17,10 @@ class SearchStationMapScreen extends StatefulWidget {
 }
 
 class _SearchStationMapScreenState extends State<SearchStationMapScreen> {
-
+  Set<Marker> _markers = {};
   late GoogleMapController _controller;
   late Position _currentPosition;
-  //todo: Fix initial position
+
   late CameraPosition _cameraPosition = const CameraPosition(
     target: LatLng(14.5772522,121.0391382),
     zoom: 14,
@@ -72,7 +72,9 @@ class _SearchStationMapScreenState extends State<SearchStationMapScreen> {
                   _controller = controller;
                   _currentPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
                   _updateMapCamera(_currentPosition.latitude, _currentPosition.longitude);
-                },)),
+                },
+                markers: _markers,
+              )),
 
             ],
           ),
@@ -176,6 +178,15 @@ class _SearchStationMapScreenState extends State<SearchStationMapScreen> {
     _controller.animateCamera(
       CameraUpdate.newCameraPosition(_cameraPosition),
     );
+    setState(() {
+      _markers = {
+        Marker(
+        markerId: const MarkerId('marker'),
+        position: LatLng(lat, lng),
+        // icon: pinLocationIcon
+      )};
+    });
+
   }
 
   _resetSelection(){
