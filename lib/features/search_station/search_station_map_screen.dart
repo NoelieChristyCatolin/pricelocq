@@ -31,6 +31,12 @@ class _SearchStationMapScreenState extends State<SearchStationMapScreen> {
   Station? selectedStation;
 
   @override
+  void initState() {
+    super.initState();
+    context.read<SearchStationCubit>().getStationList();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocBuilder<SearchStationCubit, SearchStationState>(
       builder: (context,state) => Scaffold(
@@ -63,10 +69,7 @@ class _SearchStationMapScreenState extends State<SearchStationMapScreen> {
                 onMapCreated: (GoogleMapController controller) async {
                   _controller = controller;
                   _currentPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-                  _cameraPosition = CameraPosition(target: LatLng(_currentPosition.latitude, _currentPosition.longitude), zoom: 20,);
-                  _controller.animateCamera(
-                    CameraUpdate.newCameraPosition(_cameraPosition),
-                  );
+                  updateMapCamera(_currentPosition.latitude, _currentPosition.longitude);
                 },))
             ],
           ),
@@ -87,11 +90,17 @@ class _SearchStationMapScreenState extends State<SearchStationMapScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children:  [
                       hasStationSelected ?
-                          //todo: back to list
-                          // TextButton(child: const Text('Back to list'), onPressed: resetSelection(),)
-                        const Text('Back to list', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),)
+                        InkWell(
+                            child:  const Text('Back to list',
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.lightBlue),),
+                              onTap: () => resetSelection(),
+                        )
                         : const Text('Nearby Stations', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),),
-                      const Text('Done', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Colors.grey)),
+                         InkWell(
+                             child: Text('Done',
+                                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: hasStationSelected ? Colors.lightBlue : Colors.grey)),
+                                onTap: hasStationSelected ? () => Navigator.pop(context) : (){},
+                         ),
                     ],),
                 ),
                 const SizedBox(height: 10,),
@@ -134,24 +143,22 @@ class _SearchStationMapScreenState extends State<SearchStationMapScreen> {
     final List<Object> result = await Navigator.push(context, MaterialPageRoute(builder: (context)=> const SearchStationListScreen()));
     Station selectedStation = result[0] as Station;
     int selectedIndex = result[1] as int;
-    print(selectedStation.name);
-    print(selectedIndex);
     _handleRadioValueChange(selectedIndex, selectedStation);
   }
-  _handleRadioValueChange(int value, Station station){
-    print(value);
+
+  _handleRadioValueChange(int value, Station station) {
     setState(() {
       groupValue = value;
       hasStationSelected = true;
       selectedStation = station;
 
-      updateMapCamera(station);
+      double lat = double.parse(station.lat);
+      double lng = double.parse(station.lng);
+      updateMapCamera(lat, lng);
     });
   }
 
-  updateMapCamera(Station station){
-    double lat = double.parse(station.lat);
-    double lng = double.parse(station.lng);
+  updateMapCamera(double lat, double lng){
     _cameraPosition = CameraPosition(target: LatLng(lat, lng), zoom: 20,);
     _controller.animateCamera(
       CameraUpdate.newCameraPosition(_cameraPosition),
@@ -159,9 +166,12 @@ class _SearchStationMapScreenState extends State<SearchStationMapScreen> {
   }
 
   resetSelection(){
-    print('reset');
-    hasStationSelected = false;
-    selectedStation = null;
+    print('resetSelection');
+    setState(() {
+      // groupValue = -1;
+      hasStationSelected = false;
+      // selectedStation = null;
+    });
   }
 
   int convertDistance(Station station){
